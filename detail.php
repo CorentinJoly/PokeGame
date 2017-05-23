@@ -1,19 +1,15 @@
 <?php
-if (!isset($_SESSION['auth'])) {
+if (!isset($_SESSION['auth']))
 	createFlashMessage('error', 'Vous devez être connecté', 'home');
-} else {
+ else {
 
 //On récupère le pokémon avec ses infos perso (level, dernier entrainement ...)
 $id = $_GET['id'];
-$req = $pdo->prepare("SELECT * FROM _pokemonAssoDresseur WHERE idPkm = ?");
-$req->execute([$id]);
-$pokemonFromTableAsso = $req->fetch();
+$pokemonFromTableAsso = getPokemonFromDresseur($id);
 
 //On recupère les infos générales du pokémon (nom, sexe, evolution ...)
-$req = $pdo->prepare("SELECT * FROM _pokemon WHERE numeroPokedex = ?");
 $numeroPokedex = $pokemonFromTableAsso->idPokemonConcerne;
-$req->execute([$numeroPokedex]);
-$pokemon = $req->fetch();
+$pokemon = getPokemon($numeroPokedex);
 ?>
 
 <h2 align="center">Infos détaillées</h2>
@@ -52,9 +48,7 @@ $pokemon = $req->fetch();
 		} 
 		else { 
 			//On récupère la date du dernier entrainement
-			$req = $pdo->prepare("SELECT dateLastTrain FROM _pokemonAssoDresseur WHERE idPkm = ?");
-			$req->execute([$pokemonFromTableAsso->idPkm]);
-			$dateLastTrain = $req->fetch()->dateLastTrain;
+			$dateLastTrain = getDateLastTraining($pokemonFromTableAsso->idPkm);
 			//On compare avec la date actuelle qu'on ramène en minute
 			$now   = time();
 			$date2 = strtotime($dateLastTrain);
@@ -105,8 +99,4 @@ else { ?>
 
 </form>
 
-<?php } ?>
-
-
-
-<?php }
+<?php } }

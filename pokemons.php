@@ -13,12 +13,9 @@ $user = $_SESSION['auth'];
 
 <h2>Dresseur <?= $user->nomDress ?></h2>
 
-<?php 
-//On récupère le nb de pokémon de l'utilisateur
-$req = $pdo->prepare("SELECT COUNT(idPkm) as nbPokemon FROM _pokemonAssoDresseur WHERE idDresseurConcerne = ?");
-$req->execute([$user->idDresseur]);
-$nombre = $req->fetch();
-?>
+<!-- On récupère le nb de pokémon de l'utilisateur -->
+
+<?php $nombre = getNbPokemonDresseur($user->idDresseur); ?>
 
 Vous avez <?= $nombre->nbPokemon ?>
 <?php
@@ -37,19 +34,17 @@ else
 	</tr>
 
 	<?php
-	$req = $pdo->prepare("SELECT idPkm, numeroPokedex, espece, description, sexe FROM _pokemon, _pokemonAssoDresseur WHERE _pokemon.numeroPokedex=_pokemonAssoDresseur.idPokemonConcerne AND idDresseurConcerne = ?");
-	$req->execute([$user->idDresseur]);
-	$reponses = $req->fetchAll(); 
+	$reponses = getListPokemon($user->idDresseur);
 
 	foreach($reponses as $valeur) { ?>
 
 	<tr>
-		<td style="text-align: center;"><a href="./index.php?page=detail?id=<?= $valeur->numeroPokedex; ?>">
+		<td style="text-align: center;"><a href="./index.php?page=detail&id=<?= $valeur->idPkm ?>">
 		<img src="images/<?= $valeur->espece; ?>.jpg" alt="<?= $valeur->espece; ?>" width="100px" height="100px"></a></td>
 		<td style="text-align: justify;"> <?php if ($valeur->sexe) echo "F"; else echo "M"; ?> </td>
-		<td> <a href="./index.php?page=detail&id=<?= $valeur->idPkm; ?>"> <?= $valeur->espece; ?></a> </td>
-		<td style="text-align: justify;"> <?= $valeur->description; ?> </td>
-		<td><a href="./index.php?page=detail&id=<?= $valeur->idPkm; ?>"><button>Voir le pokémon</button></a></td>
+		<td> <a href="./index.php?page=detail&id=<?= $valeur->idPkm ?>"> <?= $valeur->espece; ?></a> </td>
+		<td style="text-align: justify;"> <?= $valeur->description ?> </td>
+		<td><a href="./index.php?page=detail&id=<?= $valeur->idPkm ?>"><button>Voir le pokémon</button></a></td>
 	</tr>
 	<?php } ?>
 

@@ -13,19 +13,13 @@ $user = $_SESSION['auth'];
 
 <h2>Bienvenue au marché Pokémon</h2>
 
-<?php
-//On calcul le nombre de pièce qu'il reste au dresseur
-$req = $pdo->prepare("SELECT pieces FROM _pokemonDresseur WHERE idDresseur = ?");
-$req->execute([$user->idDresseur]);
-$nbPiece = $req->fetch();
-?>
+<!-- On calcul le nombre de pièce qu'il reste au dresseur -->
+
+<?php $nbPiece = getPieces($user->idDresseur); ?>
+
 <h3>Solde de pièces : <font color="#F6DC12"> <?= $nbPiece->pieces; ?> </font></h3>
 
-<?php
-$req = $pdo->prepare("SELECT COUNT(idPkm) as nbPokemon FROM _pokemonAssoDresseur WHERE idDresseurConcerne <> ? AND enVente = 1");
-$req->execute([$user->idDresseur]);
-$nbPokemonEnVente = $req->fetch();
-?>
+<?php $nbPokemonEnVente = getNbPokemonEnVente($user->idDresseur); ?>
 
 Il y a <?php echo $nbPokemonEnVente->nbPokemon; ?>
 <?php 
@@ -46,10 +40,9 @@ else
 	<th style="text-align: center;">Prix</th>
 </tr>
 
-<?php
-$req = $pdo->prepare("SELECT idPkm, espece, nomDress, level, prix, idDresseurConcerne FROM _pokemon, _pokemonAssoDresseur, _pokemonDresseur WHERE _pokemon.numeroPokedex=_pokemonAssoDresseur.idPokemonConcerne AND _pokemonDresseur.idDresseur=_pokemonAssoDresseur.idDresseurConcerne AND enVente= 1 AND idDresseurConcerne <> ?");
-$req->execute([$user->idDresseur]);
-$reponses = $req->fetchAll(); 
+<?php 
+$reponses = getListPkmEnVente($user->idDresseur); 
+
 foreach($reponses as $valeur) { ?>
 <input type="hidden" name="idPokemonAchete" value="<?= $valeur->idPkm; ?>">
 <input type="hidden" name="prix" value="<?= $valeur->prix ?>">

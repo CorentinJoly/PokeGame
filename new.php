@@ -22,11 +22,7 @@ function pokemonChange(selectObj) {
 		
 		<table>
 
-		<?php 
-		$req = $pdo->prepare("SELECT espece FROM _pokemon");
-		$req->execute();
-		$reponses = $req->fetchAll(); 
-		?>
+		<?php $reponses = getEspecePokemon(); ?>
 
 		<tr>
 			<td width="30%"><label><b>Espèce</b></label></td>

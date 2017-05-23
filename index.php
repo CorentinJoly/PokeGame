@@ -63,7 +63,7 @@ switch($action){
 		$req->execute([$_POST['idPokemon'], $user_id, $sexe]);
 		
 		//On envoie un mail de confirmation avec le token
-		mail($_POST['mail'], "Confirmation de votre compte", "Merci de cliquer sur ce lien pour valider votre compte \n\n http://corentin-joly.fr/CoursInf8/TD4Pokedex/confirm.php?id=$user_id&token=$token");
+		mail($_POST['mail'], "Confirmation de votre compte", "Merci de cliquer sur ce lien pour valider votre compte \n\n http://corentin-joly.fr/CoursInf8/PokeGame/confirm.php?id=$user_id&token=$token");
 		createFlashMessage('success', 'Un email de confirmation vous a été envoyé pour valider votre compte', 'inscription');
 		break;
 
