@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1300c0ff-0b93-495d-907f-7d48d1cff00d" name="ftpCorentin" url="corentin-joly.fr">
+        <fileTransfer host="ftp.cluster005.hosting.ovh.net" port="21" rootFolder="/www/CoursInf8/TD4Pokedex">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
