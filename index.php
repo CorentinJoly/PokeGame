@@ -30,9 +30,7 @@ switch($action){
 		if (empty($_POST['username']) || !preg_match('/^[a-zA-Z0-9_]+$/', $_POST['username'])) 
 			createFlashMessage('danger', 'Merci de ne pas mettre de caractères spéciaux dans votre pseudo', 'inscription');
 		else {
-			$req = $pdo->prepare("SELECT idDresseur from _pokemonDresseur where nomDress = ?");
-			$req->execute([$_POST['username']]);
-			$user = $req->fetch();
+			$user = verifNom($_POST['username']);
 			if ($user) 
 				createFlashMessage('danger', 'Ce pseudo est déjà pris', 'inscription');
 		}
@@ -41,9 +39,7 @@ switch($action){
 		if (empty($_POST['mail']) || !filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL))
 			createFlashMessage('danger', 'Adresse email invalide', 'inscription');
 		else {
-			$req = $pdo->prepare("SELECT mailDress from _pokemonDresseur where mailDress = ?");
-			$req->execute([$_POST['mail']]);
-			$mail = $req->fetch();
+			$mail = verifMail($_POST['mail']);
 			if ($mail)
 				createFlashMessage('danger', 'Cet mail est déjà utilisé', 'inscription');
 		}
@@ -71,17 +67,13 @@ switch($action){
 	*Autre cas
 	*/
 	case "connexion":
-		$req = $pdo->prepare("SELECT * FROM _pokemonDresseur WHERE (nomDress = :username OR mailDress = :username) AND confirmationDate IS NOT NULL");
-		$req->execute(['username' => $_POST['username']]);
-		$user = $req->fetch();
-
+		$user = connexion($_POST['username']);
 		if(password_verify($_POST['password'], $user->mdpDress)) {
 			$_SESSION['auth'] = $user;
 			createFlashMessage('success', 'Vous êtes maintenant connecté', 'pokemons');
 		}
-		else{
+		else
 			createFlashMessage('danger', 'Identifiant ou mot de passe incorrect', 'connexion');
-		}
 		break;
 
 	/*
@@ -107,8 +99,7 @@ switch($action){
 	*/
 	case "miseEnVente":
 		//On prépare la requête pour mettre le pokémon en vente (on récuprère son idPkm et le prix de mise en vente)
-		$req = $pdo->prepare("UPDATE _pokemonAssoDresseur SET enVente =1, prix = ? WHERE idPkm = ?");
-		$req->execute([$_POST['prix'], $_POST['idPokemonDetail']]);
+		miseEnVente($_POST['prix'], $_POST['idPokemonDetail']);
 
 		createFlashMessage('success', 'Le pokémon a bien été mise en vente', 'pokemons');
 		break;
@@ -118,8 +109,7 @@ switch($action){
 	*/
 	case "retirerVente":
 		//On prépare la requête pour mettre le pokémon en vente (on récuprère son idPkm et le prix de mise en vente)
-		$req = $pdo->prepare("UPDATE _pokemonAssoDresseur SET enVente =0, prix = 0 WHERE idPkm = ?");
-		$req->execute([$_POST['idPokemonDetail']]);
+		retirerVente($_POST['idPokemonDetail']);
 
 		createFlashMessage('success', 'Le pokémon a bien été retiré de la vente', 'pokemons');
 		break;
@@ -151,9 +141,13 @@ switch($action){
 	*Autre cas
 	*/
 	case 'entrainer':
-		$xpGagne = rand (10, 30);
-		$req = $pdo->prepare("UPDATE _pokemonAssoDresseur SET dateLastTrain = NOW(), experience = experience + ? WHERE idPkm = ?");
-		$req->execute([$xpGagne, $_POST['idPokemonDetail']]);
+		$pokemon = getPokemonFromDresseur($_POST['idPokemonDetail']);
+		$idCourbe = getCourbe($_POST['idPokemonDetail'])->courbe;
+		$idPkm = $pokemon->idPkm;
+		$xp = $pokemon->experience;
+		$niveau = $pokemon->level;
+		setEntrainement($idPkm,$xp,$niveau,$idCourbe);
+
 		createFlashMessage('success', 'Votre pokémon est bien parti s\'entrainer, il sera de retour dans 1h', 'pokemons');
 		break;
 }

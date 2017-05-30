@@ -9,6 +9,7 @@ $user = getDresseur($user_id);
 session_start();
 
 if($user && $user->confirmationToken == $token){
+	confirmInscription($user_id);
 	$_SESSION['auth'] = $user;
 	createFlashMessage('success', 'Votre compte a bien été validé', 'pokemons');
 }
